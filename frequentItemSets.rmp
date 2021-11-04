@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<process version="7.1.001">
+  <context>
+    <input/>
+    <output/>
+    <macros/>
+  </context>
+  <operator activated="true" class="process" compatibility="7.1.001" expanded="true" name="Process">
+    <parameter key="logverbosity" value="init"/>
+    <parameter key="random_seed" value="2001"/>
+    <parameter key="send_mail" value="never"/>
+    <parameter key="notification_email" value=""/>
+    <parameter key="process_duration_for_mail" value="30"/>
+    <parameter key="encoding" value="SYSTEM"/>
+    <process expanded="true">
+      <operator activated="true" class="retrieve" compatibility="7.1.001" expanded="true" height="68" name="Retrieve Traveldata" width="90" x="45" y="85">
+        <parameter key="repository_entry" value="//Local Repository/data/Traveldata"/>
+      </operator>
+      <operator activated="true" class="discretize_by_frequency" compatibility="7.1.001" expanded="true" height="103" name="Discretize" width="90" x="246" y="136">
+        <parameter key="return_preprocessing_model" value="false"/>
+        <parameter key="create_view" value="false"/>
+        <parameter key="attribute_filter_type" value="all"/>
+        <parameter key="attribute" value=""/>
+        <parameter key="attributes" value=""/>
+        <parameter key="use_except_expression" value="false"/>
+        <parameter key="value_type" value="numeric"/>
+        <parameter key="use_value_type_exception" value="false"/>
+        <parameter key="except_value_type" value="real"/>
+        <parameter key="block_type" value="value_series"/>
+        <parameter key="use_block_type_exception" value="false"/>
+        <parameter key="except_block_type" value="value_series_end"/>
+        <parameter key="invert_selection" value="false"/>
+        <parameter key="include_special_attributes" value="false"/>
+        <parameter key="use_sqrt_of_examples" value="false"/>
+        <parameter key="number_of_bins" value="2"/>
+        <parameter key="range_name_type" value="long"/>
+        <parameter key="automatic_number_of_digits" value="true"/>
+        <parameter key="number_of_digits" value="-1"/>
+      </operator>
+      <operator activated="true" class="nominal_to_binominal" compatibility="7.1.001" expanded="true" height="103" name="Nominal to Binominal" width="90" x="380" y="187">
+        <parameter key="return_preprocessing_model" value="false"/>
+        <parameter key="create_view" value="false"/>
+        <parameter key="attribute_filter_type" value="all"/>
+        <parameter key="attribute" value=""/>
+        <parameter key="attributes" value=""/>
+        <parameter key="use_except_expression" value="false"/>
+        <parameter key="value_type" value="nominal"/>
+        <parameter key="use_value_type_exception" value="false"/>
+        <parameter key="except_value_type" value="file_path"/>
+        <parameter key="block_type" value="single_value"/>
+        <parameter key="use_block_type_exception" value="false"/>
+        <parameter key="except_block_type" value="single_value"/>
+        <parameter key="invert_selection" value="false"/>
+        <parameter key="include_special_attributes" value="false"/>
+        <parameter key="transform_binominal" value="false"/>
+        <parameter key="use_underscore_in_name" value="false"/>
+      </operator>
+      <operator activated="true" class="fp_growth" compatibility="7.1.001" expanded="true" height="82" name="FP-Growth" width="90" x="514" y="136">
+        <parameter key="find_min_number_of_itemsets" value="true"/>
+        <parameter key="min_number_of_itemsets" value="100"/>
+        <parameter key="max_number_of_retries" value="15"/>
+        <parameter key="min_support" value="0.95"/>
+        <parameter key="max_items" value="-1"/>
+        <parameter key="keep_example_set" value="false"/>
+      </operator>
+      <connect from_op="Retrieve Traveldata" from_port="output" to_op="Discretize" to_port="example set input"/>
+      <connect from_op="Discretize" from_port="example set output" to_op="Nominal to Binominal" to_port="example set input"/>
+      <connect from_op="Nominal to Binominal" from_port="example set output" to_op="FP-Growth" to_port="example set"/>
+      <connect from_op="FP-Growth" from_port="frequent sets" to_port="result 1"/>
+      <portSpacing port="source_input 1" spacing="0"/>
+      <portSpacing port="sink_result 1" spacing="0"/>
+      <portSpacing port="sink_result 2" spacing="0"/>
+    </process>
+  </operator>
+</process>
